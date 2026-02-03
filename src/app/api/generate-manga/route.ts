@@ -46,12 +46,10 @@ Format: Single panel, square aspect ratio, no text or speech bubbles.`;
     const candidates = response.candidates;
     if (candidates && candidates[0]?.content?.parts) {
       for (const part of candidates[0].content.parts) {
-        // @ts-expect-error - inlineData exists on image parts
-        if (part.inlineData) {
-          // @ts-expect-error - accessing inlineData properties
-          const base64Data = part.inlineData.data;
-          // @ts-expect-error - accessing inlineData properties
-          const mimeType = part.inlineData.mimeType || 'image/png';
+        const partAny = part as { inlineData?: { data: string; mimeType?: string } };
+        if (partAny.inlineData) {
+          const base64Data = partAny.inlineData.data;
+          const mimeType = partAny.inlineData.mimeType || 'image/png';
           console.log('✓ Image found! MIME type:', mimeType);
           return `data:${mimeType};base64,${base64Data}`;
         }
